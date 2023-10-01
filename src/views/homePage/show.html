@@ -1,0 +1,12 @@
+{{ define "homePage/show" }}
+<div hx-target="this" hx-swap="outerHTML">
+  <div><label>ID</label> {{ .id }}</div>
+  <div><label>First Name</label>: {{ .firstName }}</div>
+  <div><label>Last Name</label>: {{ .lastName }}</div>
+  <div><label>Email</label>: {{ .email }}</div>
+
+  <button hx-get="/contact/{{ .id }}/edit" class="btn btn-primary">
+    Click To Edit
+  </button>
+</div>
+{{ end }}

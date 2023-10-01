@@ -7,18 +7,40 @@ import (
 	"github.com/gofiber/template/html/v2"
 )
 
-// type album struct {
-// 	ID     string  `json:"id"`
-// 	Title  string  `json:"title"`
-// 	Artist string  `json:"artist"`
-// 	Price  float64 `json:"price"`
-// }
+type Contact struct {
+	ID        string `json:"id"`
+	FirstName string `json:"firstName"`
+	LastName  string `json:"lastName"`
+	Email     string `json:"email"`
+}
 
-// var albums = []album{
-// 	{ID: "1", Title: "Blue Train", Artist: "John Coltrane", Price: 56.99},
-// 	{ID: "2", Title: "Jeru", Artist: "Gerry Mulligan", Price: 17.99},
-// 	{ID: "3", Title: "Sarah Vaughan and Clifford Brown", Artist: "Sarah Vaughan", Price: 39.99},
-// }
+var contacts = []Contact{
+	{ID: "1", FirstName: "John", LastName: "Doe", Email: "john.doe@outlook.com"},
+	{ID: "2", FirstName: "Jim", LastName: "O'Tool", Email: "jimmy@gmail.com"},
+	{ID: "3", FirstName: "Frank", LastName: "Crews", Email: "frank.crews@hotmail.com"},
+}
+
+func findContact(id string) Contact {
+	for _, value := range contacts {
+		if value.ID == id {
+			return value
+		}
+	}
+
+	return Contact{}
+}
+
+func updateContact(contact Contact) {
+	// Note: this is terrible, use a hashmap
+	for index, value := range contacts {
+		if value.ID == contact.ID {
+			contacts[index].FirstName = contact.FirstName
+			contacts[index].LastName = contact.LastName
+			contacts[index].Email = contact.Email
+			break
+		}
+	}
+}
 
 func main() {
 	// Initialize standard Go html template engine
@@ -35,25 +57,63 @@ func main() {
 	app.Static("/", "./src/assets/")
 
 	// Routes
-	app.Get("/", hello)
-	app.Get("/albums", getAlbums)
+	app.Get("/", homepage)
+
+	app.Route("/contact", func(router fiber.Router) {
+		router.Get("/:id", contactShow)
+		router.Put("/:id", contactPut)
+		router.Get("/:id/edit", contactEdit)
+	}, "contact")
 
 	// Start server
 	log.Fatal(app.Listen(":3000"))
 }
 
 // Handler
-func hello(c *fiber.Ctx) error {
-	// Render index template
-	return c.Render("home", fiber.Map{
-		"HeaderTitle": "This is the header!",
-		"Title":       "Hello, World!",
+func homepage(c *fiber.Ctx) error {
+	return c.Render("homePage/home", fiber.Map{})
+}
+
+func contactShow(c *fiber.Ctx) error {
+	var contact Contact = findContact(c.Params("id"))
+
+	return c.Render("homePage/show", fiber.Map{
+		"id":        contact.ID,
+		"firstName": contact.FirstName,
+		"lastName":  contact.LastName,
+		"email":     contact.Email,
 	})
 }
 
-// getAlbums responds with the list of all albums as JSON.
-func getAlbums(c *fiber.Ctx) error {
-	return c.Render("home", fiber.Map{
-		"Title": "Hello, World!",
+func contactPut(c *fiber.Ctx) error {
+	contact := Contact{}
+
+	if err := c.BodyParser(contact); err != nil {
+
+		// var updatedContact = Contact{
+		// 	ID:        c.Params("id"),
+		// 	FirstName: c.Params("firstName"),
+		// 	LastName:  c.Params("lastName"),
+		// 	Email:     c.Params("email"),
+		// }
+
+		// Update Record
+		updateContact(contact)
+
+		// Render form
+		return contactShow(c)
+	}
+
+	return c.SendStatus(500)
+}
+
+func contactEdit(c *fiber.Ctx) error {
+	var contact Contact = findContact(c.Params("id"))
+
+	return c.Render("homePage/form", fiber.Map{
+		"id":        contact.ID,
+		"firstName": contact.FirstName,
+		"lastName":  contact.LastName,
+		"email":     contact.Email,
 	})
 }
