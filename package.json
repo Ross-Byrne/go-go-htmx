@@ -4,19 +4,17 @@
     "version": "0.0.0",
     "type": "module",
     "scripts": {
-        "dev": "vite",
-        "build": "vite build",
-        "preview": "vite preview",
-        "lint": "npx eslint src test",
+        "build": "npm run tailwind:build",
+        "lint": "npx eslint **/*.js",
         "lint:fix": "npm run lint -- --fix",
-        "prettier": "npx prettier src test --check",
-        "prettier:fix": "npm run prettier -- --write"
+        "prettier": "npx prettier src --check",
+        "prettier:fix": "npm run prettier -- --write",
+        "tailwind:build": "npx tailwindcss -i ./src/assets/css/main.css -o ./src/assets/css/output.min.css --minify"
     },
     "devDependencies": {
         "eslint": "^8.50.0",
         "eslint-config-standard": "^17.1.0",
-        "prettier": "3.0.3",
-        "tailwindcss": "^3.3.3",
-        "vite": "^4.4.9"
+        "prettier": "^3.0.3",
+        "tailwindcss": "^3.3.3"
     }
 }
