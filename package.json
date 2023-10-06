@@ -11,7 +11,8 @@
     "prettier:fix": "npm run prettier -- --write",
     "format": "npm run lint && npm run prettier",
     "format:fix": "npm run lint:fix && npm run prettier:fix",
-    "tailwind:build": "npx tailwindcss -i ./src/assets/css/main.css -o ./src/assets/css/output.min.css --minify"
+    "tailwind:build": "npx tailwindcss -i ./src/assets/css/main.css -o ./src/assets/css/output.min.css --minify",
+    "tailwind:build-watch": "npx tailwindcss -i ./src/assets/css/main.css -o ./src/assets/css/output.min.css --watch"
   },
   "devDependencies": {
     "eslint": "^8.50.0",
