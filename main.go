@@ -71,6 +71,7 @@ func main() {
 
 // Handler
 func homepage(c *fiber.Ctx) error {
+	log.Println("Hello home page")
 	return c.Render("homePage/home", fiber.Map{})
 }
 
