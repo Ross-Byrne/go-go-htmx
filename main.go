@@ -72,7 +72,9 @@ func main() {
 // Handler
 func homepage(c *fiber.Ctx) error {
 	log.Println("Hello home page")
-	return c.Render("homePage/home", fiber.Map{})
+	return c.Render("homePage/home", fiber.Map{
+		"ShowSearch": true,
+	})
 }
 
 func contactShow(c *fiber.Ctx) error {
