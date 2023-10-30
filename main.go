@@ -21,6 +21,8 @@ var contacts = []Contact{
 }
 
 func findContact(id string) Contact {
+	log.Println("ID:", id)
+
 	for _, value := range contacts {
 		if value.ID == id {
 			return value

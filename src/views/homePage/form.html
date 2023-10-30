@@ -1,20 +1,47 @@
-{{ define "homePage/form" }} {{template "partials/header" .}}
-<div class="container mx-auto pt-3">
-  <form hx-put="/contact/{{ .id }}" hx-target="this" hx-swap="outerHTML">
-    <div>
-      <label>First Name</label>
-      <input type="text" name="firstName" value="{{ .firstName }}" />
-    </div>
-    <div class="form-group">
-      <label>Last Name</label>
-      <input type="text" name="lastName" value="{{ .lastName }}" />
-    </div>
-    <div class="form-group">
-      <label>Email Address</label>
-      <input type="email" name="email" value="{{ .email }}" />
-    </div>
-    <button class="btn">Submit</button>
-    <button class="btn" hx-get="/contact/{{ .id }}">Cancel</button>
-  </form>
-</div>
+{{ define "homePage/form" }}
+<form hx-put="/contact/{{ .id }}" hx-target="this">
+  <div class="pt-2">
+    <label>First Name</label>
+    <input
+      class="border border-gray-300 focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500 px-2 rounded shadow-inner"
+      type="text"
+      name="firstName"
+      value="{{ .firstName }}"
+    />
+  </div>
+
+  <div class="pt-2">
+    <label>Last Name</label>
+    <input
+      class="border border-gray-300 focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500 px-2 rounded shadow-inner"
+      type="text"
+      name="lastName"
+      value="{{ .lastName }}"
+    />
+  </div>
+
+  <div class="pt-2">
+    <label>Email Address</label>
+    <input
+      class="border border-gray-300 focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500 px-2 rounded shadow-inner"
+      type="email"
+      name="email"
+      value="{{ .email }}"
+    />
+  </div>
+
+  <div class="pt-4">
+    <button
+      class="bg-blue-500 hover:bg-blue-700 text-white py-2 px-4 border border-blue-500 rounded"
+    >
+      Submit
+    </button>
+    <button
+      class="bg-transparent hover:bg-blue-700 text-blue-700 hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded"
+      hx-get="/contact/{{ .id }}"
+    >
+      Cancel
+    </button>
+  </div>
+</form>
 {{ end }}

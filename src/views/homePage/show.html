@@ -1,15 +1,17 @@
 {{ define "homePage/show" }} {{template "partials/header" .}}
 <div class="container mx-auto">
-  <div hx-target="this" hx-swap="outerHTML">
+  <div class="px-6 py-4" hx-target="this" hx-swap="innerHTML">
     <div><label>ID</label> {{ .id }}</div>
     <div><label>First Name</label>: {{ .firstName }}</div>
     <div><label>Last Name</label>: {{ .lastName }}</div>
     <div><label>Email</label>: {{ .email }}</div>
 
-    <button hx-get="/contact/{{ .id }}/edit" class="btn btn-primary">
+    <button
+      class="mt-4 bg-blue-500 hover:bg-blue-700 text-white py-2 px-4 border border-blue-500 rounded"
+      hx-get="/contact/{{ .id }}/edit"
+    >
       Click To Edit
     </button>
   </div>
 </div>
-
 {{ end }}
