@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"sort"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
@@ -9,19 +10,19 @@ import (
 )
 
 type Post struct {
-	ID        uint   `json:"id"`
-	Title     string `json:"title"`
-	Text      string `json:"text"`
-	AuthorId  uint   `json:"authorId"`
-	CreatedAt string `json:"createdAt"`
+	Id        uint      `json:"id"`
+	Title     string    `json:"title"`
+	Text      string    `json:"text"`
+	AuthorId  uint      `json:"authorId"`
+	CreatedAt time.Time `json:"createdAt"`
 }
 
 var postsMap = map[uint]Post{
-	0: {ID: 1, Title: "First Post", Text: "This is the body of the post", AuthorId: 1, CreatedAt: time.Now().String()},
-	1: {ID: 2, Title: "Post 2", Text: "This is the body of the post", AuthorId: 1, CreatedAt: time.Now().String()},
-	2: {ID: 3, Title: "Post 3", Text: "This is the body of the post", AuthorId: 1, CreatedAt: time.Now().String()},
-	3: {ID: 4, Title: "Post 4", Text: "This is the body of the post", AuthorId: 1, CreatedAt: time.Now().String()},
-	4: {ID: 5, Title: "Post 5", Text: "This is the body of the post", AuthorId: 1, CreatedAt: time.Now().String()},
+	0: {Id: 1, Title: "First Post", Text: "This is the body of the post", AuthorId: 1, CreatedAt: time.Now().UTC()},
+	1: {Id: 2, Title: "Post 2", Text: "This is the body of the post", AuthorId: 1, CreatedAt: time.Now().UTC()},
+	2: {Id: 3, Title: "Post 3", Text: "This is the body of the post", AuthorId: 1, CreatedAt: time.Now().UTC()},
+	3: {Id: 4, Title: "Post 4", Text: "This is the body of the post", AuthorId: 1, CreatedAt: time.Now().UTC()},
+	4: {Id: 5, Title: "Post 5", Text: "This is the body of the post", AuthorId: 1, CreatedAt: time.Now().UTC()},
 }
 
 func findPost(id uint) Post {
@@ -81,8 +82,17 @@ func main() {
 // Handler
 func homeGet(c *fiber.Ctx) error {
 	log.Println("Hello home page")
+
+	listOfPosts := allPosts()
+
+	// Sort list by id
+	sort.SliceStable(listOfPosts, func(i, j int) bool {
+		return listOfPosts[i].Id < listOfPosts[j].Id
+	})
+
 	return c.Render("home/index", fiber.Map{
 		"ShowSearch": true,
+		"Posts":      listOfPosts,
 	})
 }
 
@@ -133,3 +143,11 @@ func profileGet(c *fiber.Ctx) error {
 // 		"email":     contact.Email,
 // 	})
 // }
+
+func allPosts() []Post {
+	s := make([]Post, 0, len(postsMap))
+	for _, v := range postsMap {
+		s = append(s, v)
+	}
+	return s
+}

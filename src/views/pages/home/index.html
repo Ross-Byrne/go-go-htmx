@@ -1,10 +1,18 @@
 {{ define "home/index" }} {{template "partials/header" .}}
 
-<div class="container mx-auto flex justify-center text-center">
-  <div class="max-w-md pt-6">
-    <h1 class="text-5xl font-bold">Pondr</h1>
-    <p class="py-6">Ask questions. Get answers. Pondr.</p>
-    <button class="btn btn-primary">Get Started</button>
+<div class="container mx-auto flex justify-center overflow-y-auto">
+  <div>
+    <div class="max-w-md pt-6 text-center">
+      <h1 class="text-5xl font-medium">Pondr</h1>
+      <p class="py-6">Ask questions. Get answers. Pondr.</p>
+      <div class="divider"></div>
+    </div>
+
+    <h1 class="text-4xl font-medium text-center my-6">Lastest Posts</h1>
+
+    {{range .Posts}}
+    <div class="px-2 py-4">{{template "partials/post" .}}</div>
+    {{end}}
   </div>
 </div>
 
