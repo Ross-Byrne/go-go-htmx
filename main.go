@@ -59,7 +59,8 @@ func main() {
 	app.Static("/", "./src/assets/")
 
 	// Routes
-	app.Get("/", homepage)
+	app.Get("/", homeGet)
+	app.Get("/profile", profileGet)
 
 	app.Route("/contact", func(router fiber.Router) {
 		router.Get("/:id", contactShow)
@@ -72,17 +73,21 @@ func main() {
 }
 
 // Handler
-func homepage(c *fiber.Ctx) error {
+func homeGet(c *fiber.Ctx) error {
 	log.Println("Hello home page")
-	return c.Render("homePage/home", fiber.Map{
+	return c.Render("home/index", fiber.Map{
 		"ShowSearch": true,
 	})
+}
+
+func profileGet(c *fiber.Ctx) error {
+	return c.Render("profile/index", fiber.Map{})
 }
 
 func contactShow(c *fiber.Ctx) error {
 	var contact Contact = findContact(c.Params("id"))
 
-	return c.Render("homePage/show", fiber.Map{
+	return c.Render("home/show", fiber.Map{
 		"id":        contact.ID,
 		"firstName": contact.FirstName,
 		"lastName":  contact.LastName,
@@ -115,7 +120,7 @@ func contactPut(c *fiber.Ctx) error {
 func contactEdit(c *fiber.Ctx) error {
 	var contact Contact = findContact(c.Params("id"))
 
-	return c.Render("homePage/form", fiber.Map{
+	return c.Render("home/form", fiber.Map{
 		"id":        contact.ID,
 		"firstName": contact.FirstName,
 		"lastName":  contact.LastName,
