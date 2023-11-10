@@ -2,47 +2,53 @@ package main
 
 import (
 	"log"
+	"time"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/template/html/v2"
 )
 
-type Contact struct {
-	ID        string `json:"id"`
-	FirstName string `json:"firstName"`
-	LastName  string `json:"lastName"`
-	Email     string `json:"email"`
+type Post struct {
+	ID        uint   `json:"id"`
+	Title     string `json:"title"`
+	Text      string `json:"text"`
+	AuthorId  uint   `json:"authorId"`
+	CreatedAt string `json:"createdAt"`
 }
 
-var contacts = []Contact{
-	{ID: "1", FirstName: "John", LastName: "Doe", Email: "john.doe@outlook.com"},
-	{ID: "2", FirstName: "Jim", LastName: "O'Tool", Email: "jimmy@gmail.com"},
-	{ID: "3", FirstName: "Frank", LastName: "Crews", Email: "frank.crews@hotmail.com"},
+var postsMap = map[uint]Post{
+	0: {ID: 1, Title: "First Post", Text: "This is the body of the post", AuthorId: 1, CreatedAt: time.Now().String()},
+	1: {ID: 2, Title: "Post 2", Text: "This is the body of the post", AuthorId: 1, CreatedAt: time.Now().String()},
+	2: {ID: 3, Title: "Post 3", Text: "This is the body of the post", AuthorId: 1, CreatedAt: time.Now().String()},
+	3: {ID: 4, Title: "Post 4", Text: "This is the body of the post", AuthorId: 1, CreatedAt: time.Now().String()},
+	4: {ID: 5, Title: "Post 5", Text: "This is the body of the post", AuthorId: 1, CreatedAt: time.Now().String()},
 }
 
-func findContact(id string) Contact {
+func findPost(id uint) Post {
 	log.Println("ID:", id)
 
-	for _, value := range contacts {
-		if value.ID == id {
-			return value
-		}
-	}
+	// find post
+	post, exists := postsMap[id]
 
-	return Contact{}
+	if exists {
+		return post
+	}
+	log.Panicln("failed to find post:", id)
+
+	return Post{}
 }
 
-func updateContact(contact Contact) {
-	// Note: this is terrible, use a hashmap
-	for index, value := range contacts {
-		if value.ID == contact.ID {
-			contacts[index].FirstName = contact.FirstName
-			contacts[index].LastName = contact.LastName
-			contacts[index].Email = contact.Email
-			break
-		}
-	}
-}
+// func updateContact(contact Contact) {
+// 	// Note: this is terrible, use a hashmap
+// 	for index, value := range contacts {
+// 		if value.ID == contact.ID {
+// 			contacts[index].FirstName = contact.FirstName
+// 			contacts[index].LastName = contact.LastName
+// 			contacts[index].Email = contact.Email
+// 			break
+// 		}
+// 	}
+// }
 
 func main() {
 	// Initialize standard Go html template engine
@@ -62,11 +68,11 @@ func main() {
 	app.Get("/", homeGet)
 	app.Get("/profile", profileGet)
 
-	app.Route("/contact", func(router fiber.Router) {
-		router.Get("/:id", contactShow)
-		router.Put("/:id", contactPut)
-		router.Get("/:id/edit", contactEdit)
-	}, "contact")
+	// app.Route("/contact", func(router fiber.Router) {
+	// 	router.Get("/:id", contactShow)
+	// 	router.Put("/:id", contactPut)
+	// 	router.Get("/:id/edit", contactEdit)
+	// }, "contact")
 
 	// Start server
 	log.Fatal(app.Listen(":3000"))
@@ -84,46 +90,46 @@ func profileGet(c *fiber.Ctx) error {
 	return c.Render("profile/index", fiber.Map{})
 }
 
-func contactShow(c *fiber.Ctx) error {
-	var contact Contact = findContact(c.Params("id"))
+// func contactShow(c *fiber.Ctx) error {
+// 	var contact Contact = findContact(c.Params("id"))
 
-	return c.Render("home/show", fiber.Map{
-		"id":        contact.ID,
-		"firstName": contact.FirstName,
-		"lastName":  contact.LastName,
-		"email":     contact.Email,
-	})
-}
+// 	return c.Render("home/show", fiber.Map{
+// 		"id":        contact.ID,
+// 		"firstName": contact.FirstName,
+// 		"lastName":  contact.LastName,
+// 		"email":     contact.Email,
+// 	})
+// }
 
-func contactPut(c *fiber.Ctx) error {
-	contact := Contact{}
+// func contactPut(c *fiber.Ctx) error {
+// 	contact := Contact{}
 
-	if err := c.BodyParser(contact); err != nil {
+// 	if err := c.BodyParser(contact); err != nil {
 
-		// var updatedContact = Contact{
-		// 	ID:        c.Params("id"),
-		// 	FirstName: c.Params("firstName"),
-		// 	LastName:  c.Params("lastName"),
-		// 	Email:     c.Params("email"),
-		// }
+// 		// var updatedContact = Contact{
+// 		// 	ID:        c.Params("id"),
+// 		// 	FirstName: c.Params("firstName"),
+// 		// 	LastName:  c.Params("lastName"),
+// 		// 	Email:     c.Params("email"),
+// 		// }
 
-		// Update Record
-		updateContact(contact)
+// 		// Update Record
+// 		updateContact(contact)
 
-		// Render form
-		return contactShow(c)
-	}
+// 		// Render form
+// 		return contactShow(c)
+// 	}
 
-	return c.SendStatus(500)
-}
+// 	return c.SendStatus(500)
+// }
 
-func contactEdit(c *fiber.Ctx) error {
-	var contact Contact = findContact(c.Params("id"))
+// func contactEdit(c *fiber.Ctx) error {
+// 	var contact Contact = findContact(c.Params("id"))
 
-	return c.Render("home/form", fiber.Map{
-		"id":        contact.ID,
-		"firstName": contact.FirstName,
-		"lastName":  contact.LastName,
-		"email":     contact.Email,
-	})
-}
+// 	return c.Render("home/form", fiber.Map{
+// 		"id":        contact.ID,
+// 		"firstName": contact.FirstName,
+// 		"lastName":  contact.LastName,
+// 		"email":     contact.Email,
+// 	})
+// }
