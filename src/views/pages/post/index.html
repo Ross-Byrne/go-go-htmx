@@ -1,0 +1,20 @@
+{{ define "post/index" }}
+
+<div class="container mx-auto py-6">
+  <h1 class="text-4xl font-medium px-2 pt-4">{{.Post.Title}}</h1>
+  <div class="divider my-2"></div>
+  <div class="flex justify-between px-2 text-base-content">
+    <label class="label-text">
+      <span>Author</span>
+      <span class="pl-2">{{.Post.AuthorId}}</span>
+    </label>
+    <label class="label-text">
+      <span>Posted</span>
+      <span class="pl-2">{{.Post.CreatedAt.Format "2006-02-01"}}</span>
+    </label>
+  </div>
+
+  <p class="px-2 pt-10">{{.Post.Text}}</p>
+</div>
+
+{{ end }}

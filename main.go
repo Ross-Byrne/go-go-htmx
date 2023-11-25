@@ -116,7 +116,7 @@ func postGet(c *fiber.Ctx) error {
 		return c.SendStatus(404)
 	}
 
-	return c.Render("home/show", fiber.Map{
+	return c.Render("post/index", fiber.Map{
 		"Post": post,
 	})
 }
