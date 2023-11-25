@@ -15,7 +15,7 @@
     "tailwind:build-watch": "npx tailwindcss -i ./src/assets/css/main.css -o ./src/assets/css/output.min.css --watch"
   },
   "devDependencies": {
-    "daisyui": "^3.9.4",
+    "daisyui": "^4.4.7",
     "eslint": "^8.50.0",
     "eslint-config-prettier": "^9.0.0",
     "eslint-config-standard": "^17.1.0",
