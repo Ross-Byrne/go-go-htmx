@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"sort"
+	"strconv"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
@@ -10,22 +11,22 @@ import (
 )
 
 type Post struct {
-	Id        uint      `json:"id"`
+	Id        uint64    `json:"id"`
 	Title     string    `json:"title"`
 	Text      string    `json:"text"`
-	AuthorId  uint      `json:"authorId"`
+	AuthorId  uint64    `json:"authorId"`
 	CreatedAt time.Time `json:"createdAt"`
 }
 
-var postsMap = map[uint]Post{
-	0: {Id: 1, Title: "First Post", Text: "This is the body of the post", AuthorId: 1, CreatedAt: time.Now().UTC()},
-	1: {Id: 2, Title: "Post 2", Text: "This is the body of the post", AuthorId: 1, CreatedAt: time.Now().UTC()},
-	2: {Id: 3, Title: "Post 3", Text: "This is the body of the post", AuthorId: 1, CreatedAt: time.Now().UTC()},
-	3: {Id: 4, Title: "Post 4", Text: "This is the body of the post", AuthorId: 1, CreatedAt: time.Now().UTC()},
-	4: {Id: 5, Title: "Post 5", Text: "This is the body of the post", AuthorId: 1, CreatedAt: time.Now().UTC()},
+var postsMap = map[uint64]Post{
+	1: {Id: 1, Title: "First Post", Text: "This is the body of the post", AuthorId: 1, CreatedAt: time.Now().UTC()},
+	2: {Id: 2, Title: "Post 2", Text: "This is the body of the post", AuthorId: 1, CreatedAt: time.Now().UTC()},
+	3: {Id: 3, Title: "Post 3", Text: "This is the body of the post", AuthorId: 1, CreatedAt: time.Now().UTC()},
+	4: {Id: 4, Title: "Post 4", Text: "This is the body of the post", AuthorId: 1, CreatedAt: time.Now().UTC()},
+	5: {Id: 5, Title: "Post 5", Text: "This is the body of the post", AuthorId: 1, CreatedAt: time.Now().UTC()},
 }
 
-func findPost(id uint) Post {
+func findPost(id uint64) Post {
 	log.Println("ID:", id)
 
 	// find post
@@ -34,7 +35,7 @@ func findPost(id uint) Post {
 	if exists {
 		return post
 	}
-	log.Panicln("failed to find post:", id)
+	log.Println("failed to find post:", id)
 
 	return Post{}
 }
@@ -69,11 +70,11 @@ func main() {
 	app.Get("/", homeGet)
 	app.Get("/profile", profileGet)
 
-	// app.Route("/contact", func(router fiber.Router) {
-	// 	router.Get("/:id", contactShow)
-	// 	router.Put("/:id", contactPut)
-	// 	router.Get("/:id/edit", contactEdit)
-	// }, "contact")
+	app.Route("/post", func(router fiber.Router) {
+		router.Get("/:id", postGet)
+		// router.Put("/:id", postPut)
+		// router.Get("/:id/edit", postEdit)
+	}, "post")
 
 	// Start server
 	log.Fatal(app.Listen(":3000"))
@@ -100,16 +101,25 @@ func profileGet(c *fiber.Ctx) error {
 	return c.Render("profile/index", fiber.Map{})
 }
 
-// func contactShow(c *fiber.Ctx) error {
-// 	var contact Contact = findContact(c.Params("id"))
+func postGet(c *fiber.Ctx) error {
+	id, err := strconv.ParseUint(c.Params("id"), 10, 64)
 
-// 	return c.Render("home/show", fiber.Map{
-// 		"id":        contact.ID,
-// 		"firstName": contact.FirstName,
-// 		"lastName":  contact.LastName,
-// 		"email":     contact.Email,
-// 	})
-// }
+	if err != nil {
+		log.Println("Could not parse ID {} as int", c.Params("id"))
+		return c.SendStatus(422)
+	}
+
+	post := findPost(id)
+
+	// Return 404 if no post found
+	if post == (Post{}) {
+		return c.SendStatus(404)
+	}
+
+	return c.Render("home/show", fiber.Map{
+		"Post": post,
+	})
+}
 
 // func contactPut(c *fiber.Ctx) error {
 // 	contact := Contact{}
