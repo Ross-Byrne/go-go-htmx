@@ -1,8 +1,8 @@
-<header class="navbar header-height sticky top-0 bg-base-200 shadow-md">
-  <div class="flex-none font-medium">
-    <a class="px-6" href="/">Pondr</a>
+<header class="navbar header-height sticky space-x-2 bg-base-200 shadow-md">
+  <div class="basis-1/6 justify-start">
+    <a class="btn btn-lg" role="button" href="/">Pondr</a>
   </div>
-  <div class="flex-1 justify-center py-2">
+  <div class="basis-4/6 justify-center">
     {{ if .ShowSearch }}
     <input
       type="text"
@@ -11,7 +11,8 @@
     />
     {{ end }}
   </div>
-  <div class="flex-none font-medium">
-    <a class="px-6" href="/profile">Profile</a>
+  <div class="basis-1/6 justify-end">
+    <a class="btn text-primary" role="button" href="/create-post">Create</a>
+    <a class="btn" role="button" href="/profile">Profile</a>
   </div>
 </header>
