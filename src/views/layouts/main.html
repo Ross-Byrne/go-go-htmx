@@ -19,7 +19,14 @@
     <link rel="stylesheet" href="/css/output.min.css" />
   </head>
 
-  <body class="h-screen">
-    {{template "partials/header" .}} {{ embed }}
+  <body
+    class="h-screen"
+    hx-boost="true"
+    hx-select=".content-container"
+    hx-swap="innerHTML"
+    hx-target=".content-container"
+  >
+    {{template "partials/header" .}}
+    <div class="content-container overflow-y-auto">{{ embed }}</div>
   </body>
 </html>

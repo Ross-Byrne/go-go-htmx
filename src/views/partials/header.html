@@ -1,15 +1,15 @@
-<header class="navbar header-height sticky space-x-2 bg-base-200 shadow-md">
+<header
+  class="navbar header-height sticky top-0 space-x-2 bg-base-200 shadow-md"
+>
   <div class="basis-1/6 justify-start">
     <a class="btn btn-lg" role="button" href="/">Pondr</a>
   </div>
   <div class="basis-4/6 justify-center">
-    {{ if .ShowSearch }}
     <input
       type="text"
       placeholder="Search..."
-      class="input input-bordered w-full max-w-xl"
+      class="input input-sm input-bordered w-full max-w-xl"
     />
-    {{ end }}
   </div>
   <div class="basis-1/6 justify-end">
     <a class="btn text-primary" role="button" href="/create-post">Create</a>

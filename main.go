@@ -84,6 +84,7 @@ func main() {
 		// router.Put("/:id", postPut)
 		// router.Get("/:id/edit", postEdit)
 	}, "post")
+	app.Get("/create-post", createPost)
 
 	// Start server
 	log.Fatal(app.Listen(":3000"))
@@ -101,8 +102,7 @@ func homeGet(c *fiber.Ctx) error {
 	})
 
 	return c.Render("home/index", fiber.Map{
-		"ShowSearch": true,
-		"Posts":      listOfPosts,
+		"Posts": listOfPosts,
 	})
 }
 
@@ -128,6 +128,10 @@ func postGet(c *fiber.Ctx) error {
 	return c.Render("post/index", fiber.Map{
 		"Post": post,
 	})
+}
+
+func createPost(c *fiber.Ctx) error {
+	return c.Render("createPost/index", fiber.Map{})
 }
 
 // func contactPut(c *fiber.Ctx) error {
