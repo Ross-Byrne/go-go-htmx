@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"sort"
 	"strconv"
@@ -11,14 +12,14 @@ import (
 )
 
 type Post struct {
-	Id        uint64    `json:"id"`
-	Title     string    `json:"title"`
-	Text      string    `json:"text"`
-	AuthorId  uint64    `json:"authorId"`
-	CreatedAt time.Time `json:"createdAt"`
+	Id        uint64
+	Title     string `form:"title"`
+	Text      string `form:"text"`
+	AuthorId  uint64
+	CreatedAt time.Time
 }
 
-var postsMap = map[uint64]Post{
+var postsMap = map[uint64]*Post{
 	1: {Id: 1, Title: "First Post", Text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean sollicitudin, elit sed mollis hendrerit, turpis lectus pellentesque arcu, ut pharetra nibh risus bibendum urna. Cras bibendum gravida orci ut vehicula. Ut egestas neque sed imperdiet vulputate. Integer faucibus consequat ante ut posuere. Suspendisse quis diam quis eros dictum feugiat eu at dui. Donec id sollicitudin erat. Aliquam pulvinar purus eu venenatis posuere. Donec eleifend aliquam nunc, nec pellentesque ex sagittis non. Mauris luctus sodales mi vitae pretium. Sed volutpat metus eu justo iaculis, eget venenatis velit sagittis. Curabitur sem neque, euismod in lectus non, hendrerit ullamcorper leo. Aliquam tempor, mi sit amet sagittis mollis, lacus lectus convallis mi, ut tincidunt nibh purus vel lorem. Proin a tortor neque. Aenean magna nulla, vestibulum non mi et, rutrum condimentum velit.", AuthorId: 1, CreatedAt: time.Now().UTC()},
 	2: {Id: 2, Title: "Post 2", Text: `Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean sollicitudin, elit sed mollis hendrerit, turpis lectus pellentesque arcu, ut pharetra nibh risus bibendum urna. Cras bibendum gravida orci ut vehicula. Ut egestas neque sed imperdiet vulputate. Integer faucibus consequat ante ut posuere. Suspendisse quis diam quis eros dictum feugiat eu at dui. Donec id sollicitudin erat. Aliquam pulvinar purus eu venenatis posuere. Donec eleifend aliquam nunc, nec pellentesque ex sagittis non. Mauris luctus sodales mi vitae pretium. Sed volutpat metus eu justo iaculis, eget venenatis velit sagittis. Curabitur sem neque, euismod in lectus non, hendrerit ullamcorper leo. Aliquam tempor, mi sit amet sagittis mollis, lacus lectus convallis mi, ut tincidunt nibh purus vel lorem. Proin a tortor neque. Aenean magna nulla, vestibulum non mi et, rutrum condimentum velit.
 
@@ -35,31 +36,17 @@ var postsMap = map[uint64]Post{
 	5: {Id: 5, Title: "Post 5", Text: "This is the body of the post", AuthorId: 1, CreatedAt: time.Now().UTC()},
 }
 
-func findPost(id uint64) Post {
-	log.Println("ID:", id)
-
-	// find post
+func findPost(id uint64) *Post {
 	post, exists := postsMap[id]
 
 	if exists {
 		return post
 	}
-	log.Println("failed to find post:", id)
 
-	return Post{}
+	log.Println("Failed to find post with ID: {}", id)
+
+	return &Post{}
 }
-
-// func updateContact(contact Contact) {
-// 	// Note: this is terrible, use a hashmap
-// 	for index, value := range contacts {
-// 		if value.ID == contact.ID {
-// 			contacts[index].FirstName = contact.FirstName
-// 			contacts[index].LastName = contact.LastName
-// 			contacts[index].Email = contact.Email
-// 			break
-// 		}
-// 	}
-// }
 
 func main() {
 	// Initialize standard Go html template engine
@@ -80,11 +67,12 @@ func main() {
 	app.Get("/profile", profileGet)
 
 	app.Route("/post", func(router fiber.Router) {
+		router.Get("/create", createPostGet)
+		router.Post("/create", createPostPost)
+
 		router.Get("/:id", postGet)
-		// router.Put("/:id", postPut)
-		// router.Get("/:id/edit", postEdit)
 	}, "post")
-	app.Get("/create-post", createPost)
+	app.Get("/create", createPostGet)
 
 	// Start server
 	log.Fatal(app.Listen(":3000"))
@@ -98,7 +86,7 @@ func homeGet(c *fiber.Ctx) error {
 
 	// Sort list by id
 	sort.SliceStable(listOfPosts, func(i, j int) bool {
-		return listOfPosts[i].Id < listOfPosts[j].Id
+		return listOfPosts[i].Id > listOfPosts[j].Id
 	})
 
 	return c.Render("home/index", fiber.Map{
@@ -121,7 +109,7 @@ func postGet(c *fiber.Ctx) error {
 	post := findPost(id)
 
 	// Return 404 if no post found
-	if post == (Post{}) {
+	if *post == (Post{}) {
 		return c.SendStatus(404)
 	}
 
@@ -130,47 +118,36 @@ func postGet(c *fiber.Ctx) error {
 	})
 }
 
-func createPost(c *fiber.Ctx) error {
+func createPostGet(c *fiber.Ctx) error {
 	return c.Render("createPost/index", fiber.Map{})
 }
 
-// func contactPut(c *fiber.Ctx) error {
-// 	contact := Contact{}
+func createPostPost(c *fiber.Ctx) error {
+	post := new(Post)
 
-// 	if err := c.BodyParser(contact); err != nil {
+	if err := c.BodyParser(post); err != nil {
+		return c.SendStatus(500)
+	}
 
-// 		// var updatedContact = Contact{
-// 		// 	ID:        c.Params("id"),
-// 		// 	FirstName: c.Params("firstName"),
-// 		// 	LastName:  c.Params("lastName"),
-// 		// 	Email:     c.Params("email"),
-// 		// }
+	post.Id = uint64(len(postsMap) + 1)
+	post.AuthorId = 1
+	post.CreatedAt = time.Now().UTC()
+	postsMap[post.Id] = post
 
-// 		// Update Record
-// 		updateContact(contact)
+	log.Println("Created new post with ID: {}", post.Id)
 
-// 		// Render form
-// 		return contactShow(c)
-// 	}
+	newLocation := fmt.Sprintf("/post/%d", post.Id)
+	c.Set("HX-Location", newLocation)
 
-// 	return c.SendStatus(500)
-// }
-
-// func contactEdit(c *fiber.Ctx) error {
-// 	var contact Contact = findContact(c.Params("id"))
-
-// 	return c.Render("home/form", fiber.Map{
-// 		"id":        contact.ID,
-// 		"firstName": contact.FirstName,
-// 		"lastName":  contact.LastName,
-// 		"email":     contact.Email,
-// 	})
-// }
+	return c.Render("post/index", fiber.Map{
+		"Post": post,
+	})
+}
 
 func allPosts() []Post {
 	s := make([]Post, 0, len(postsMap))
 	for _, v := range postsMap {
-		s = append(s, v)
+		s = append(s, *v)
 	}
 	return s
 }
