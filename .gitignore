@@ -23,3 +23,6 @@ go.work
 #  Javascript
 node_modules/
 dist/
+
+# Local database
+sqlite.db
