@@ -6,10 +6,10 @@
       <h2 class="card-title">{{.Title}}</h2>
       <p class="line-clamp-6">{{.Text}}</p>
       <div class="card-actions justify-start">
-        <div><span>Author ID: </span>{{.AuthorID}}</div>
+        <div><span>Author: </span>{{.AuthorID}}</div>
         <div>
-          <span>Created At: </span>
-          {{.CreatedAt.Format "Jan 02, 2006 15:04:05 UTC"}}
+          <span>Posted: </span>
+          {{.CreatedAt.Format "Jan 02, 2006"}}
         </div>
       </div>
     </div>

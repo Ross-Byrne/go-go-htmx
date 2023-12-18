@@ -11,13 +11,12 @@ func SetupRouter(app *fiber.App) {
 
 	// Routes
 	app.Get("/", handlers.GetHome)
-	app.Get("/profile", handlers.ProfileGet)
+	app.Get("/profile", handlers.GetProfile)
 
 	app.Route("/post", func(router fiber.Router) {
-		router.Get("/create", handlers.CreatePostGet)
-		router.Post("/create", handlers.CreatePostPost)
+		router.Get("/create", handlers.GetCreatePost)
+		router.Post("/create", handlers.PostCreatePost)
 
-		router.Get("/:id", handlers.PostGet)
+		router.Get("/:id", handlers.GetPost)
 	}, "post")
-	app.Get("/create", handlers.CreatePostGet)
 }

@@ -5,13 +5,20 @@ import (
 
 	"go-go-htmx/src/models"
 
+	"github.com/gofiber/fiber/v2"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 )
 
-func ConnectToDB() (*gorm.DB, error) {
-	db, err := gorm.Open(sqlite.Open("sqlite3.db"), &gorm.Config{})
+func ConnectToDB(c *fiber.Ctx) (*gorm.DB, error) {
+	db, err := gorm.Open(sqlite.Open("sqlite.db"), &gorm.Config{})
+
 	if err != nil {
+		log.Fatal("Failed to connect to database")
+		if c != nil {
+			return nil, c.SendStatus(500)
+		}
+
 		return nil, err
 	}
 
@@ -19,7 +26,7 @@ func ConnectToDB() (*gorm.DB, error) {
 }
 
 func InitialiseDatabase(seedData bool) {
-	db, err := ConnectToDB()
+	db, err := ConnectToDB(nil)
 
 	if err != nil {
 		log.Fatal("Failed to connect database")

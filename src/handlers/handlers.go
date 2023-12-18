@@ -1,24 +1,19 @@
 package handlers
 
 import (
-	"log"
-
+	"fmt"
 	"go-go-htmx/src/helpers"
 	"go-go-htmx/src/models"
+	"log"
 
 	"github.com/gofiber/fiber/v2"
 )
 
 func GetHome(c *fiber.Ctx) error {
-	log.Println("Hello home page")
-
-	// listOfPosts := allPosts()
-
-	db, err := helpers.ConnectToDB()
+	db, err := helpers.ConnectToDB(c)
 
 	if err != nil {
-		log.Fatal("Failed to connect database")
-		return c.SendStatus(500)
+		return err
 	}
 
 	var posts []models.Post
@@ -28,66 +23,63 @@ func GetHome(c *fiber.Ctx) error {
 		return c.SendStatus(500)
 	}
 
-	// Sort list by id
-	// sort.SliceStable(listOfPosts, func(i, j int) bool {
-	// 	return listOfPosts[i].ID > listOfPosts[j].ID
-	// })
-
 	return c.Render("home/index", fiber.Map{
 		"Posts": posts,
 	})
 }
 
-func ProfileGet(c *fiber.Ctx) error {
+func GetProfile(c *fiber.Ctx) error {
 	return c.Render("profile/index", fiber.Map{})
 }
 
-func PostGet(c *fiber.Ctx) error {
-	// id, err := strconv.ParseUint(c.Params("id"), 10, 64)
+func GetPost(c *fiber.Ctx) error {
+	db, err := helpers.ConnectToDB(c)
 
-	// if err != nil {
-	// 	log.Println("Could not parse ID {} as int", c.Params("id"))
-	// 	return c.SendStatus(422)
-	// }
+	if err != nil {
+		return err
+	}
 
-	// post := findPost(id)
+	var post models.Post
+	db.First(&post, c.Params("id"))
 
-	// // Return 404 if no post found
-	// if *post == (models.Post{}) {
-	// 	return c.SendStatus(404)
-	// }
+	if post == (models.Post{}) {
+		return c.SendStatus(404)
+	}
 
-	// return c.Render("post/index", fiber.Map{
-	// 	"Post": post,
-	// })
-
-	return c.Render("post/index", fiber.Map{})
+	return c.Render("post/index", fiber.Map{
+		"Post": post,
+	})
 }
 
-func CreatePostGet(c *fiber.Ctx) error {
+func GetCreatePost(c *fiber.Ctx) error {
 	return c.Render("createPost/index", fiber.Map{})
 }
 
-func CreatePostPost(c *fiber.Ctx) error {
-	// post := new(models.Post)
+func PostCreatePost(c *fiber.Ctx) error {
+	db, err := helpers.ConnectToDB(c)
 
-	// if err := c.BodyParser(post); err != nil {
-	// 	return c.SendStatus(500)
-	// }
+	if err != nil {
+		return err
+	}
 
-	// post.ID = uint64(len(postsMap) + 1)
-	// post.AuthorID = 1
-	// post.CreatedAt = time.Now().UTC()
-	// postsMap[post.ID] = post
+	post := new(models.Post)
 
-	// log.Println("Created new post with ID: {}", post.ID)
+	if err := c.BodyParser(post); err != nil {
+		log.Println("Error trying to parse request body")
+		return c.SendStatus(500)
+	}
 
-	// newLocation := fmt.Sprintf("/post/%d", post.ID)
-	// c.Set("HX-Location", newLocation)
+	result := db.Create(&post)
 
-	// return c.Render("post/index", fiber.Map{
-	// 	"Post": post,
-	// })
+	if result.Error != nil {
+		log.Println("Error trying to creating Post")
+		return c.SendStatus(500)
+	}
 
-	return c.Render("post/index", fiber.Map{})
+	newLocation := fmt.Sprintf("/post/%d", post.ID)
+	c.Set("HX-Location", newLocation)
+
+	return c.Render("post/index", fiber.Map{
+		"Post": post,
+	})
 }
