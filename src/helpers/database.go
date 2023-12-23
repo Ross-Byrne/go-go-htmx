@@ -11,14 +11,20 @@ import (
 )
 
 func ConnectToDB(c *fiber.Ctx) (*gorm.DB, error) {
+	db, err := connectToDB()
+
+	if err != nil {
+		return nil, c.SendStatus(500)
+	}
+
+	return db, nil
+}
+
+func connectToDB() (*gorm.DB, error) {
 	db, err := gorm.Open(sqlite.Open("sqlite.db"), &gorm.Config{})
 
 	if err != nil {
 		log.Fatal("Failed to connect to database")
-		if c != nil {
-			return nil, c.SendStatus(500)
-		}
-
 		return nil, err
 	}
 
@@ -26,7 +32,7 @@ func ConnectToDB(c *fiber.Ctx) (*gorm.DB, error) {
 }
 
 func InitialiseDatabase(seedData bool) {
-	db, err := ConnectToDB(nil)
+	db, err := connectToDB()
 
 	if err != nil {
 		log.Fatal("Failed to connect database")
