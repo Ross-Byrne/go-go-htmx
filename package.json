@@ -4,15 +4,15 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "build": "npm run tailwind:build",
-    "lint": "npx eslint **/*.js **/*.cjs",
-    "lint:fix": "npm run lint -- --fix",
-    "prettier": "npx prettier **/*.js **/*.cjs **/*.css **/*.html **/*.json --check",
-    "prettier:fix": "npm run prettier -- --write",
-    "format": "npm run lint && npm run prettier",
-    "format:fix": "npm run lint:fix && npm run prettier:fix",
-    "tailwind:build": "npx tailwindcss -i ./src/assets/css/main.css -o ./src/assets/css/output.min.css --minify",
-    "tailwind:build-watch": "npx tailwindcss -i ./src/assets/css/main.css -o ./src/assets/css/output.min.css --watch"
+    "build": "bun run tailwind:build",
+    "lint": "bunx eslint **/*.js **/*.cjs",
+    "lint:fix": "bun run lint -- --fix",
+    "prettier": "bunx prettier **/*.js **/*.cjs **/*.css **/*.html **/*.json --check",
+    "prettier:fix": "bun run prettier -- --write",
+    "format": "bun run lint && npm run prettier",
+    "format:fix": "bun run lint:fix && npm run prettier:fix",
+    "tailwind:build": "bunx tailwindcss -i ./src/assets/css/main.css -o ./src/assets/css/output.min.css --minify",
+    "tailwind:build-watch": "bunx tailwindcss -i ./src/assets/css/main.css -o ./src/assets/css/output.min.css --watch"
   },
   "devDependencies": {
     "daisyui": "^4.4.7",
